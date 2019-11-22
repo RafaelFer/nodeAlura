@@ -1,6 +1,7 @@
 
 const http = require('http');
 const fs = require('fs');
+const path = require('path');
 const excel = require('excel4node');
 
 module.exports = function(app){
@@ -11,7 +12,21 @@ module.exports = function(app){
   });
 
   app.get('/report/download', function(req, res){
+    
     console.log('Preparando para realizar download Report.')
+
+    const directoryFiles = './report/';
+
+    //Delete all report files.
+    fs.readdir(directoryFiles, (err, files) => {
+      if (err) throw err;
+      for (const file of files) {
+        fs.unlink(path.join(directoryFiles, file), err => {
+          if (err) throw err;
+        });
+      }
+    });
+
 
     // Create a new instance of a Workbook class
     var workbook = new excel.Workbook();
@@ -44,9 +59,10 @@ module.exports = function(app){
     // Set value of cell A3 to true as a boolean type styled with paramaters of style but with an adjustment to the font size.
     worksheet.cell(3,1).bool(true).style(style).style({font: {size: 14}});
 
-    workbook.write('Excel.xlsx');
 
-    res.download('Excel.xlsx');
+    workbook.write("relatorio.xlsx");
+
+    res.download("relatorio.xlsx");
 
   });
 
