@@ -3,6 +3,8 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const excel = require('excel4node');
+const axios = require('axios')
+const moment = require('moment');
 
 module.exports = function(app){
 
@@ -12,57 +14,49 @@ module.exports = function(app){
   });
 
   app.get('/report/download', function(req, res){
-    
+
     console.log('Preparando para realizar download Report.')
 
-    const directoryFiles = './report/';
-
-    //Delete all report files.
-    fs.readdir(directoryFiles, (err, files) => {
-      if (err) throw err;
-      for (const file of files) {
-        fs.unlink(path.join(directoryFiles, file), err => {
+    try {
+      if (fs.existsSync('relatorio.xlsx')) {
+        fs.unlink('relatorio.xlsx', function (err) {
           if (err) throw err;
-        });
+          console.log('File deleted!');
+         }); 
       }
-    });
-
+    } catch(err) {
+      console.error(err)
+    }
 
     // Create a new instance of a Workbook class
     var workbook = new excel.Workbook();
 
     // Add Worksheets to the workbook
-    var worksheet = workbook.addWorksheet('Sheet222 1');
-    var worksheet2 = workbook.addWorksheet('Sheet222 2');
-
+    var worksheet = workbook.addWorksheet('avaliacoes');
     // Create a reusable style
-    var style = workbook.createStyle({
-      font: {
-        color: '#FF0800',
-        size: 12
-      },
-      numberFormat: '$#,##0.00; ($#,##0.00); -'
+    var styleHeader = workbook.createStyle({
+      fill: {
+        type: 'pattern',
+        patternType: 'solid',
+        bgColor: '#FFFF00',
+        fgColor: '#FFFF00',
+      }
     });
 
-    // Set value of cell A1 to 100 as a number type styled with paramaters of style
-    worksheet.cell(1,1).number(100).style(style);
+    var styleBody = workbook.createStyle({
+    });
 
-    // Set value of cell B1 to 300 as a number type styled with paramaters of style
-    worksheet.cell(1,2).number(200).style(style);
+    
+    worksheet.cell(1,1).string(moment().format('LLLL')).style(styleBody);
 
-    // Set value of cell C1 to a formula styled with paramaters of style
-    worksheet.cell(1,3).formula('A1 + B1').style(style);
-
-    // Set value of cell A2 to 'string' styled with paramaters of style
-    worksheet.cell(2,1).string('string').style(style);
-
-    // Set value of cell A3 to true as a boolean type styled with paramaters of style but with an adjustment to the font size.
-    worksheet.cell(3,1).bool(true).style(style).style({font: {size: 14}});
-
+    worksheet.cell(4,3).string('Data e Hora').style(styleHeader);
+    worksheet.cell(4,4).string('Destino').style(styleHeader);
+    worksheet.cell(4,5).string('Mensagem').style(styleHeader);
+    worksheet.cell(4,6).string('Estrelas').style(styleHeader);
 
     workbook.write("relatorio.xlsx");
-
-    res.download("relatorio.xlsx");
+    
+    res.download("relatorio.xlsx")
 
   });
 
