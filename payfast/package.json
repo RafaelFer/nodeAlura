@@ -14,7 +14,7 @@
   "author": "juliocvidal",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.19.0",
+    "axios": "^0.21.1",
     "body-parser": "^1.15.2",
     "consign": "^0.1.2",
     "excel4node": "^1.7.2",
