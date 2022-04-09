@@ -20,7 +20,7 @@
     "excel4node": "^1.7.2",
     "express": "^4.14.0",
     "express-validator": "^2.20.8",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "mysql": "^2.11.1",
     "path": "^0.12.7",
     "restify": "^4.1.1",
